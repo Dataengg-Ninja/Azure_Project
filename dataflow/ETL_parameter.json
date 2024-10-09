@@ -1,0 +1,90 @@
+{
+	"name": "ETL_parameter",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ETLsource1",
+						"type": "DatasetReference"
+					},
+					"name": "ETLsource1"
+				},
+				{
+					"dataset": {
+						"referenceName": "ETLsource2",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ETL_parameter_target",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "orderstatus"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "dailyproductrevenue"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     order_month as string ('201308')",
+				"}",
+				"source(output(",
+				"          order_id as integer,",
+				"          order_date as date,",
+				"          order_customer_id as integer,",
+				"          order_status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ETLsource1",
+				"source(output(",
+				"          order_item_id as integer,",
+				"          order_item_order_id as integer,",
+				"          order_item_product_id as integer,",
+				"          order_item_quantity as integer,",
+				"          order_item_subtotal as float,",
+				"          order_item_product_price as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
+				"ETLsource1 filter(in(['COMPLETED','CLOSED'],order_status) && toString(order_date,'yyyyMM')==$order_month) ~> orderstatus",
+				"orderstatus, source2 join(order_id == order_item_order_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 aggregate(groupBy(order_date,",
+				"          order_item_product_id),",
+				"     revenue = round(sum(order_item_subtotal),2),",
+				"     partitionBy('roundRobin', 2)) ~> dailyproductrevenue",
+				"dailyproductrevenue sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          order_date as date,",
+				"          order_item_product_id as integer,",
+				"          revenue as double",
+				"     ),",
+				"     format: 'parquet',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1) ~> sink1"
+			]
+		}
+	}
+}

@@ -1,0 +1,48 @@
+{
+	"name": "sql_to_synapse",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "ETL_sql_to_synapse",
+						"type": "DataFlowReference",
+						"parameters": {
+							"order_month": {
+								"value": "'@{pipeline().parameters.order_month}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"order_month": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "sql server to synapse"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-10-06T13:08:42Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

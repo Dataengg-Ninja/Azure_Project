@@ -1,0 +1,54 @@
+{
+	"name": "ETL_parameters",
+	"properties": {
+		"activities": [
+			{
+				"name": "ETL_parameter_pipeline",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "ETL_parameter",
+						"type": "DataFlowReference",
+						"parameters": {
+							"order_month": {
+								"value": "'@{pipeline().parameters.order_month}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"sink1": {
+								"order_month": {
+									"value": "@pipeline().parameters.order_month",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"order_month": {
+				"type": "string",
+				"defaultValue": "201307"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-10-01T05:43:22Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

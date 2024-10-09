@@ -1,0 +1,43 @@
+{
+	"name": "ETL_parameter_target",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"order_month": {
+				"type": "String",
+				"defaultValue": "201401"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": {
+					"value": "@concat('retail_db/daily_product_revenue_monthly_parquet/order_month=',dataset().order_month)",
+					"type": "Expression"
+				},
+				"container": "datastorage"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "order_date",
+				"type": "DATE"
+			},
+			{
+				"name": "order_item_product_id",
+				"type": "INT32"
+			},
+			{
+				"name": "revenue",
+				"type": "DOUBLE"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

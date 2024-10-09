@@ -1,0 +1,97 @@
+{
+	"name": "ETL_sql_to_synapse",
+	"properties": {
+		"folder": {
+			"name": "sqlservertoazuresynapse"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlorderstable",
+						"type": "DatasetReference"
+					},
+					"name": "SourceOrders",
+					"description": "from Orders table"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlorder_items",
+						"type": "DatasetReference"
+					},
+					"name": "SourceOrderItems",
+					"description": "from order items"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynapseAnalyticsTable1",
+						"type": "DatasetReference"
+					},
+					"name": "synapse",
+					"description": "final data"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     order_month as string ('2013-07')",
+				"}",
+				"source(output(",
+				"          order_id as integer,",
+				"          order_date as date,",
+				"          order_customer_id as integer,",
+				"          order_status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: (\"select * from orders where order_date like '{$order_month}%' and order_status in ('COMPLETE','CLOSED')\"),",
+				"     format: 'query') ~> SourceOrders",
+				"source(output(",
+				"          order_item_id as integer,",
+				"          order_item_order_id as integer,",
+				"          order_item_product_id as integer,",
+				"          order_item_quantity as integer,",
+				"          order_item_subtotal as double,",
+				"          order_item_product_price as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceOrderItems",
+				"SourceOrders, SourceOrderItems join(order_id == order_item_order_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     partitionBy('roundRobin', 2),",
+				"     broadcast: 'auto')~> join1",
+				"join1 aggregate(groupBy(order_date,",
+				"          order_item_product_id),",
+				"     complete_revenue = round(sum(order_item_subtotal),2),",
+				"     partitionBy('roundRobin', 2)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> synapse"
+			]
+		}
+	}
+}
