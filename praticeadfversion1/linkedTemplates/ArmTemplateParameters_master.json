@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "praticeadfversion1"
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
+		"AzureSqlDatabase1_password": {
+			"value": ""
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://sbitsaproject1.dfs.core.windows.net/"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"value": "dev-sql-env.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"value": "dev_db"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"value": "sqlserveradmin"
+		},
+		"HttpServer1_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/Dataengg-Ninja/Azure_Project/refs/heads/main/E-Commerce%20DataSet/List%20of%20Orders.csv"
+		},
+		"HttpServer2_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/Dataengg-Ninja/Azure_Project/refs/heads/main/E-Commerce%20DataSet/Order%20Details.csv"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
