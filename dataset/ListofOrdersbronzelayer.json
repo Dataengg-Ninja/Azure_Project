@@ -1,5 +1,5 @@
 {
-	"name": "bronzelayer",
+	"name": "ListofOrdersbronzelayer",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDataLakeStorage1",
@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": "List of Orders",
 				"fileSystem": "bronze-layer"
 			},
 			"compressionCodec": "snappy"
