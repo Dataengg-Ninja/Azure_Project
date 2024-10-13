@@ -1,0 +1,30 @@
+{
+	"name": "AzureSqlSalestarge",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Month_of_Order_Date",
+				"type": "varchar"
+			},
+			{
+				"name": "Category",
+				"type": "varchar"
+			},
+			{
+				"name": "Target",
+				"type": "float",
+				"precision": 15
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "sales_target"
+		}
+	}
+}
